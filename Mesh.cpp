@@ -191,4 +191,3 @@ void Mesh::setSphereData(std::vector<Vertex>& vertices, std::vector<uint32_t>& i
 	indices = _indices;
 }
 
-//Chapter 6 p.174 Camera Class todo
