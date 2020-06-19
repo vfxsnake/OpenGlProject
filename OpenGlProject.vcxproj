@@ -143,12 +143,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="LightRender.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="LightRender.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="ShaderLoader.h" />
   </ItemGroup>
