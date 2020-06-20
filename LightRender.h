@@ -25,7 +25,7 @@ public:
 	void draw();
 	void setPosition(glm::vec3 _position);
 	void setColor(glm::vec3 _color);
-	void setProgram(GLuint program);
+	void setProgram(GLuint _program);
 
 	glm::vec3 getPosition();
 	glm::vec3 getColor();

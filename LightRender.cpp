@@ -49,14 +49,24 @@ LightRender::LightRender(MeshType meshType, Camera* camera) // must be implement
 	glBindVertexArray(0);
 }	
 
+LightRender::~LightRender()
+{
+	// destructor
+}
+
 void LightRender::draw()
 {
+	//printf("light Render draw call \n");
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(glm::mat4(1.0), position);
 	glUseProgram(this->program);
 	GLint modelLoc = glGetUniformLocation(program, "model");
 	
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+	glm::mat4 view = camera->getViewMatrix();
+	GLint vLoc = glGetUniformLocation(program, "view");
+	glUniformMatrix4fv(vLoc, 1, GL_FALSE, glm::value_ptr(view));
 
 	glm::mat4 proj = camera->getProjectionMatrix();
 	GLint pLoc = glGetUniformLocation(program, "projection");
@@ -66,6 +76,31 @@ void LightRender::draw()
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
 	glBindVertexArray(0);
+
+	//printf("finising draw \n");
 }
 
-// Todo implement destructor chapter6 p.189
+void LightRender::setPosition(glm::vec3 _position)
+{
+	position = _position;
+}
+
+void LightRender::setColor(glm::vec3 _color)
+{
+	color = _color;
+}
+
+void LightRender::setProgram(GLuint _program)
+{
+	program = _program;
+}
+
+glm::vec3 LightRender::getPosition()
+{
+	return position;
+}
+
+glm::vec3 LightRender::getColor()
+{
+	return color;
+}

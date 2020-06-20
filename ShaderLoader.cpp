@@ -17,6 +17,7 @@ std::string ShaderLoader::readShader(const char* filename)
 	file.seekg(0, std::ios::beg);
 	file.read(&shaderCode[0], shaderCode.size());
 	file.close();
+	printf("returning shaderCode");
 	return shaderCode;
 }
 
@@ -44,7 +45,7 @@ GLuint ShaderLoader::createShader(GLenum shaderType, std::string source, const c
 		std::cout << "ERROR compiling shader: " << shaderName << std::endl << &shader_log[0] << std::endl;
 		return 0;
 	}
-
+	printf("retruning Shader");
 	return shader;
 }
 
@@ -84,8 +85,6 @@ GLuint ShaderLoader::CreateProgram(const char* vertexShaderFilename, const char*
 		std::cout << "Shader Loader:: link ERROR" << std::endl << &program_log[0] << std::endl;
 		return 0;
 	}
-
+	printf("returning program");
 	return program;
 }
-
-// todo Light Render class chapter 6 p.180 todo implementation fo Light Render Class

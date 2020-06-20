@@ -17,6 +17,11 @@ Camera::Camera(GLfloat FOV, GLfloat width, GLfloat height,
 	projectionMatrix = glm::perspective(FOV, width / height, nearPlane, farPlane);
 }
 
+Camera::~Camera()
+{
+	//destructor
+}
+
 glm::mat4 Camera::getViewMatrix()
 {
 	return viewMatrix;
