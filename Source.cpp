@@ -20,7 +20,7 @@ void initGame()
 													"Assets/Shaders/flatModel.fs");
 	// initilize camera
 	camera = new Camera(45.0f, 800, 600, 0.1f, 100.0f, glm::vec3(0.0f, 4.0f, 6.0f));
-	light = new LightRender(MeshType::kTriangle, camera);
+	light = new LightRender(MeshType::kSphere, camera);
 	light->setProgram(flatShaderProgram);
 	light->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 }
@@ -55,8 +55,7 @@ int main(int argc, char** argv)
 		// in this loop all renders will ocure
 
 		renderScene();
-		// Chapter 6 p.175 Creating a mesh class to do
-		//
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
