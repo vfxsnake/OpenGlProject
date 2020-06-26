@@ -14,14 +14,14 @@ MeshRenderer::MeshRenderer(MeshType modelType, Camera* _camera)
 		break;
 
 	case kQuad:
-		Mesh::setCubeData(vertices, indices);
+		Mesh::setQuadData(vertices, indices);
 		break;
 	case kCube:
 		Mesh::setCubeData(vertices, indices);
 		break;
 
 	case kSphere:
-		Mesh::setCubeData(vertices, indices);
+		Mesh::setSphereData(vertices, indices);
 		break;
 	}
 
@@ -102,5 +102,3 @@ void MeshRenderer::setProgram(GLuint _program)
 	program = _program;
 }
 
-/// Mesh Renderer Implemented, todo Creating TextureLoader Class
-// Chapter 7 p.204
