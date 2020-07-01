@@ -1,8 +1,12 @@
 #include "MeshRenderer.h"
 
-MeshRenderer::MeshRenderer(MeshType modelType, Camera* _camera)
+MeshRenderer::MeshRenderer(MeshType modelType, Camera* _camera, btRigidBody* _rigidBody)
 {
 	camera = _camera;
+	
+	//setting the rigid body:
+	rigidBody = _rigidBody;
+
 	scale = glm::vec3(1.0f,1.0f,1.0f);
 	position = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -51,10 +55,23 @@ MeshRenderer::MeshRenderer(MeshType modelType, Camera* _camera)
 
 void MeshRenderer::draw()
 {
-	glm::mat4 TraslationMatrix = glm::translate(glm::mat4(1.0f), position);
+	// bullet implementation in draw:
+	btTransform t; // this will be an output value
+	rigidBody->getMotionState()->getWorldTransform(t);
+
+	// get info from btTrasnform:
+	btQuaternion rotation = t.getRotation();
+	btVector3 translate = t.getOrigin();
+
+	glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.0f), rotation.getAngle(),
+		glm::vec3(rotation.getAxis().getX(), rotation.getAxis().getY(), rotation.getAxis().getZ()));
+
+	glm::mat4 TraslationMatrix = glm::translate(glm::mat4(1.0f), 
+		glm::vec3(translate.getX(), translate.getY(), translate.getZ()));
+	
 	glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
 
-	modelMatrix = TraslationMatrix * scaleMatrix;
+	modelMatrix = TraslationMatrix * RotationMatrix * scaleMatrix;
 
 	glm::mat4 vp = camera->getProjectionMatrix() * camera->getViewMatrix();
 

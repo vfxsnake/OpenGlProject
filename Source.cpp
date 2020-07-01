@@ -5,7 +5,14 @@
 #include "LightRender.h"
 #include "MeshRenderer.h"
 #include "TextureLoader.h"
+// bullet physics includes:
+#include <btBulletDynamicsCommon.h>
 
+// including chrono fro time
+#include <chrono>
+
+// bullet dynamics pointer:
+btDiscreteDynamicsWorld* dynamicsWorld;
 // create Camera instace
 Camera* camera;
 
@@ -21,6 +28,35 @@ void initGame()
 	printf("calling intGame************ \n");
 	glEnable(GL_DEPTH_TEST);
 
+	// init physics:
+	btBroadphaseInterface* broadPhase = new btDbvtBroadphase();
+	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
+	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
+	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver();
+	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadPhase, solver, collisionConfiguration);
+	dynamicsWorld->setGravity(btVector3(0, -9.8f, 0));
+
+	// creatin a dymamic sphere
+	btCollisionShape* sphereShape = new btSphereShape(1.0f);
+	btDefaultMotionState* sphereMotionState = 
+		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0,10.0f,0)));
+	// creating physical properties:
+	btScalar mass = 10.0;
+	btVector3 sphereInertia(0,0,0);
+	sphereShape->calculateLocalInertia(mass, sphereInertia); /// inertia is an output value
+
+	btRigidBody::btRigidBodyConstructionInfo sphereRigidBodyCI(mass, sphereMotionState,
+																sphereShape, sphereInertia);
+	//create the actuall rigid body:
+	btRigidBody* sphereRigidBody = new btRigidBody(sphereRigidBodyCI);
+
+	// settings properties:
+	sphereRigidBody->setRestitution(1.0f);
+	sphereRigidBody->setFriction(1.0f);
+
+	// ading rigid body to world:
+	dynamicsWorld->addRigidBody(sphereRigidBody);
+
 	ShaderLoader shader;
 	GLuint flatShaderProgram = shader.CreateProgram("Assets/Shaders/FlatModel.vs", 
 													"Assets/Shaders/flatModel.fs");
@@ -31,11 +67,13 @@ void initGame()
 	// stores the texture result of thexture loader
 	GLuint sphereTexture = tLoader.getTextureID("Assets/Textures/globe.jpg");
 
+
+
 	// initilize camera
-	camera = new Camera(45.0f, 800, 600, 0.1f, 100.0f, glm::vec3(0.0f, 0.0f, 4.0f));
+	camera = new Camera(45.0f, 800, 600, 0.1f, 100.0f, glm::vec3(0.0f, 4.0f, 20.0f));
 
 	// init Mesh renderer to Sphere
-	Sphere = new MeshRenderer(MeshType::kSphere, camera);
+	Sphere = new MeshRenderer(MeshType::kSphere, camera, sphereRigidBody);
 	Sphere->setProgram(texturedShaderProgram);
 	Sphere->setTexture(sphereTexture);
 	Sphere->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -76,10 +114,17 @@ int main(int argc, char** argv)
 	glewInit();
 	initGame();
 
+	// initialize the chrono clock:
+	// this is a chrono::steady_clock::time_point type, auto catch the type so you don't need to specify.
+	auto previousTime = std::chrono::high_resolution_clock::now();
+
 	while (!glfwWindowShouldClose(window))
 	{	
 		// in this loop all renders will ocure
-
+		// init time:
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		float dt = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - previousTime).count();
+		dynamicsWorld->stepSimulation(dt);
 		renderScene();
 
 		glfwSwapBuffers(window);

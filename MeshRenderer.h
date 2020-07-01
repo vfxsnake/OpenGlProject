@@ -9,10 +9,13 @@
 #include "Dependencies/glm/glm/gtc/matrix_transform.hpp"
 #include "Dependencies/glm/glm/gtc/type_ptr.hpp"
 
+// bullet include:
+#include <btBulletDynamicsCommon.h> // this include could be loaded in cpp later and add forward delcaration.
+
 class MeshRenderer
 {
 public:
-	MeshRenderer(MeshType modelType, Camera* _camera);
+	MeshRenderer(MeshType modelType, Camera* _camera, btRigidBody* _rigidBody);
 	~MeshRenderer();
 
 	void draw();
@@ -26,6 +29,9 @@ private:
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices;
 	glm::mat4 modelMatrix;
+	
+	// bullet pointer:
+	btRigidBody* rigidBody;
 
 	Camera* camera;
 	glm::vec3 position;
