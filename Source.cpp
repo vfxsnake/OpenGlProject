@@ -19,8 +19,10 @@ Camera* camera;
 // create renderer instace
 LightRender* light;
 
-// sphere mesh renderer
+// sphere mesh renderer:
 MeshRenderer* Sphere;
+// ground mesh renderer:
+MeshRenderer* Ground;
 
 
 void initGame()
@@ -57,6 +59,26 @@ void initGame()
 	// ading rigid body to world:
 	dynamicsWorld->addRigidBody(sphereRigidBody);
 
+	// collision ground: here is created the  collision grond, after adding to dynamics world, 
+	// it collides with the sphere but not been desplay . the display box must be created just like the sphere
+	btCollisionShape* groundShape = new btBoxShape(btVector3(4.0f, 0.5f, 4.0f));
+
+	btDefaultMotionState* groundMotionState = new
+		btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.0f, -2.0f, 0.0f)));
+
+	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0.0f, new btDefaultMotionState, groundShape, btVector3(0, 0, 0));
+
+	btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
+	groundRigidBody->setFriction(1.0f);
+	groundRigidBody->setRestitution(0.9);
+	groundRigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
+
+	dynamicsWorld->addRigidBody(groundRigidBody);
+
+	// init render objetcs:
+	// initilize camera
+	camera = new Camera(45.0f, 800, 600, 0.1f, 100.0f, glm::vec3(0.0f, 4.0f, 20.0f));
+
 	ShaderLoader shader;
 	GLuint flatShaderProgram = shader.CreateProgram("Assets/Shaders/FlatModel.vs", 
 													"Assets/Shaders/flatModel.fs");
@@ -68,10 +90,6 @@ void initGame()
 	GLuint sphereTexture = tLoader.getTextureID("Assets/Textures/globe.jpg");
 
 
-
-	// initilize camera
-	camera = new Camera(45.0f, 800, 600, 0.1f, 100.0f, glm::vec3(0.0f, 4.0f, 20.0f));
-
 	// init Mesh renderer to Sphere
 	Sphere = new MeshRenderer(MeshType::kSphere, camera, sphereRigidBody);
 	Sphere->setProgram(texturedShaderProgram);
@@ -79,14 +97,15 @@ void initGame()
 	Sphere->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	Sphere->setScale(glm::vec3(1.0f));
 
-	// ligt Renderre init should be commented for performace issues.
-	//light = new LightRender(MeshType::kSphere, camera);
-	//light->setProgram(flatShaderProgram);
-	//light->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	// init Collisiot box:
+	GLuint groundTexture = tLoader.getTextureID("Assets/Textures/ground.jpg");
+	Ground = new MeshRenderer(MeshType::kCube, camera, groundRigidBody);
+	Ground->setProgram(texturedShaderProgram);
+	Ground->setTexture(groundTexture);
+	Ground->setScale(glm::vec3(4.0f,0.5f,4.0f));
 }
+// chapter 7 conpleted todo chapter 8
 
-/// Texture loader and Mesh rederer implemented.  todo Implement Bullet Physics:
-// Adding Bullet Physics Chapter7 p.213 
 
 
 void renderScene()
@@ -97,6 +116,7 @@ void renderScene()
 	// Draw game objects down here
 	//light->draw();
 	Sphere->draw();
+	Ground->draw();
 }
 
 static void glfwError(int id, const char* description)
